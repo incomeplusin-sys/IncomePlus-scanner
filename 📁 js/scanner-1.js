@@ -449,7 +449,24 @@ class VolumePatternScanner {
         // Show notification
         this.showNotification('Scan completed successfully!', 'success');
     }
-    
+    // ====================
+// GLOBAL EXPORTS - SIMPLIFIED
+// ====================
+
+// Create the scanner instance
+window.scanner = new VolumePatternScanner();
+
+// Direct function assignments
+window.startVolumeScan = function() { 
+    console.log('startVolumeScan called');
+    return window.scanner.startVolumeScan(); 
+};
+window.stopScan = function() { return window.scanner.stopScan(); };
+window.exportResults = function() { return window.scanner.exportResults(); };
+window.clearResults = function() { return window.scanner.clearResults(); };
+window.showSampleData = function() { return window.scanner.showSampleData(); };
+
+console.log('Scanner functions registered to window object');
     /**
      * Stop the current scan
      */
