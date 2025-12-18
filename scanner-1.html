@@ -405,5 +405,12 @@
             // This will be populated by scanner-1.js
         }
     </script>
+// At the end of scanner-1.js
+const scanner = new VolumePatternScanner();
+window.startVolumeScan = () => scanner.startVolumeScan();
+window.stopScan = () => scanner.stopScan();
+window.exportResults = () => scanner.exportResults();
+window.clearResults = () => scanner.clearResults();
+window.showSampleData = () => scanner.showSampleData(); 
 </body>
 </html>
