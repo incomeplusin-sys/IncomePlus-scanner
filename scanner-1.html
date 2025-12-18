@@ -405,6 +405,7 @@
             // This will be populated by scanner-1.js
         }
     </script>
+    
 // At the end of scanner-1.js
 const scanner = new VolumePatternScanner();
 window.startVolumeScan = () => scanner.startVolumeScan();
@@ -412,5 +413,19 @@ window.stopScan = () => scanner.stopScan();
 window.exportResults = () => scanner.exportResults();
 window.clearResults = () => scanner.clearResults();
 window.showSampleData = () => scanner.showSampleData(); 
+<script>
+    // Fix button click handlers
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('startBtn').addEventListener('click', function() {
+            if (typeof startVolumeScan === 'function') {
+                startVolumeScan();
+            } else {
+                alert('Scanner not loaded! Check console for errors.');
+                console.error('startVolumeScan is not a function:', typeof startVolumeScan);
+            }
+        });
+    });
+</script>
+    
 </body>
 </html>
