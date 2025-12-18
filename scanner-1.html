@@ -3,46 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volume Pattern Scanner | IncomePlus | Real-time V & U Pattern Detection</title>
+    <title>Volume Pattern Scanner | IncomePlus</title>
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        success: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" href="images/favicon.ico">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+    
+    <style>
+        .pattern-v { background-color: #dcfce7; color: #166534; }
+        .pattern-u { background-color: #dbeafe; color: #1e40af; }
+        .pattern-d { background-color: #fee2e2; color: #991b1b; }
+        
+        .glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 5px #3b82f6; }
+            to { box-shadow: 0 0 20px #3b82f6; }
+        }
+        
+        .progress-pulse {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation (Same as index.html) -->
+    <!-- Navigation -->
     <nav class="bg-white shadow-lg sticky top-0 z-50">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center h-16">
-                <a href="/" class="flex items-center space-x-3">
-                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                <!-- Logo -->
+                <a href="index.html" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                         <i class="fas fa-chart-line text-white text-xl"></i>
                     </div>
-                    <span class="text-2xl font-bold text-gray-900">IncomePlus</span>
+                    <div>
+                        <span class="text-2xl font-bold text-gray-900">IncomePlus</span>
+                        <span class="text-xs text-primary font-medium block">Smart Trading Tools</span>
+                    </div>
                 </a>
                 
+                <!-- Desktop Menu -->
                 <div class="hidden md:flex items-center space-x-8">
-                    <a href="/" class="text-gray-700 hover:text-blue-600">Home</a>
-                    <a href="scanner-1.html" class="text-blue-600 font-medium">Scanner 1</a>
-                    <a href="trial.html" class="text-gray-700 hover:text-blue-600">Free Trial</a>
-                    <a href="#" onclick="startDemoScan()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
-                        <i class="fas fa-play mr-2"></i>Start Scan
-                    </a>
+                    <a href="index.html" class="text-gray-700 hover:text-primary font-medium">Home</a>
+                    <a href="scanner-1.html" class="text-primary font-bold border-b-2 border-primary">Volume Scanner</a>
+                    <a href="trial.html" class="text-gray-700 hover:text-primary font-medium">Free Trial</a>
+                    <button onclick="startVolumeScan()" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 font-medium transition-colors">
+                        <i class="fas fa-play mr-2"></i>Start Live Scan
+                    </button>
                 </div>
                 
+                <!-- Mobile Menu Button -->
                 <button onclick="toggleMobileMenu()" class="md:hidden text-gray-700">
                     <i class="fas fa-bars text-2xl"></i>
                 </button>
             </div>
             
+            <!-- Mobile Menu -->
             <div id="mobileMenu" class="hidden md:hidden py-4 border-t">
-                <a href="/" class="block py-3 text-gray-700 hover:text-blue-600">Home</a>
-                <a href="scanner-1.html" class="block py-3 text-blue-600 font-medium">Scanner 1</a>
-                <a href="trial.html" class="block py-3 text-gray-700 hover:text-blue-600">Free Trial</a>
-                <a href="#" onclick="startDemoScan()" class="block mt-4 bg-blue-600 text-white py-3 text-center rounded-lg">
-                    <i class="fas fa-play mr-2"></i>Start Scan
-                </a>
+                <a href="index.html" class="block py-3 text-gray-700 hover:text-primary font-medium">Home</a>
+                <a href="scanner-1.html" class="block py-3 text-primary font-bold">Volume Scanner</a>
+                <a href="trial.html" class="block py-3 text-gray-700 hover:text-primary font-medium">Free Trial</a>
+                <button onclick="startVolumeScan()" class="block mt-4 w-full bg-primary text-white py-3 text-center rounded-lg font-medium">
+                    <i class="fas fa-play mr-2"></i>Start Live Scan
+                </button>
             </div>
         </div>
     </nav>
@@ -50,188 +103,308 @@
     <!-- Scanner Interface -->
     <section class="py-8">
         <div class="container mx-auto px-4 max-w-6xl">
-            <div class="bg-white rounded-xl shadow-lg p-6">
-                <h1 class="text-2xl font-bold mb-2">Volume Pattern Scanner</h1>
-                <p class="text-gray-600 mb-6">Detect V & U patterns in Indian stocks</p>
-                
-                <!-- Trial Warning -->
-                <div id="trialWarning" class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-6">
-                    <div class="flex">
-                        <div class="flex-shrink-0">
-                            <i class="fas fa-exclamation-triangle text-yellow-400"></i>
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Volume Pattern Scanner</h1>
+                <p class="text-gray-600">Detect V, U, and D volume patterns in real-time using your Python logic</p>
+                <div class="inline-flex items-center space-x-4 mt-4 text-sm">
+                    <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full">
+                        <i class="fas fa-check-circle mr-1"></i>Python Algorithms
+                    </span>
+                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full">
+                        <i class="fas fa-bolt mr-1"></i>Real-time Data
+                    </span>
+                    <span class="bg-purple-100 text-purple-800 px-3 py-1 rounded-full">
+                        <i class="fas fa-chart-bar mr-1"></i>Pattern Detection
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Main Scanner Card -->
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6">
+                <!-- Scanner Header -->
+                <div class="bg-gradient-to-r from-primary to-blue-700 text-white p-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-xl font-bold">Live Volume Pattern Scanner</h2>
+                            <p class="text-blue-100">Scanning NSE stocks for volume patterns</p>
                         </div>
-                        <div class="ml-3">
-                            <p class="text-sm text-yellow-700">
-                                <span class="font-bold">Free Trial Active:</span> You have 7 days remaining. 
-                                <a href="trial.html" class="font-medium underline">Upgrade to continue after trial</a>
-                            </p>
+                        <div class="hidden md:block">
+                            <div class="flex items-center space-x-4">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold" id="patternsFound">0</div>
+                                    <div class="text-xs text-blue-200">Patterns Found</div>
+                                </div>
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold" id="stocksScanned">0</div>
+                                    <div class="text-xs text-blue-200">Stocks Scanned</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Controls -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div>
-                        <label class="block text-gray-700 mb-2">Select Stocks</label>
-                        <select class="w-full border rounded-lg p-3" id="stockSelect">
-                            <option value="all">All Indian Stocks (100+)</option>
-                            <option value="nifty50">Nifty 50 Stocks</option>
-                            <option value="bank">Banking Stocks</option>
-                            <option value="it">IT Stocks</option>
-                        </select>
+                <!-- Scanner Controls -->
+                <div class="p-6">
+                    <!-- Settings -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <!-- Stock Selection -->
+                        <div>
+                            <label class="block text-gray-700 mb-3 font-medium">
+                                <i class="fas fa-list mr-2"></i>Stocks to Scan
+                            </label>
+                            <select id="stockSelect" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="nifty50">Nifty 50 Stocks</option>
+                                <option value="niftybank">Nifty Bank</option>
+                                <option value="top10" selected>Top 10 Nifty</option>
+                                <option value="custom">Custom List</option>
+                            </select>
+                        </div>
+                        
+                        <!-- Pattern Selection -->
+                        <div>
+                            <label class="block text-gray-700 mb-3 font-medium">
+                                <i class="fas fa-shapes mr-2"></i>Pattern Types
+                            </label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <label class="flex items-center space-x-2 p-2 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                    <input type="checkbox" id="vPattern" checked class="h-4 w-4 text-primary">
+                                    <span class="font-medium">V Pattern</span>
+                                </label>
+                                <label class="flex items-center space-x-2 p-2 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                    <input type="checkbox" id="uPattern" checked class="h-4 w-4 text-primary">
+                                    <span class="font-medium">U Pattern</span>
+                                </label>
+                                <label class="flex items-center space-x-2 p-2 border rounded-lg cursor-pointer hover:bg-gray-50">
+                                    <input type="checkbox" id="dPattern" class="h-4 w-4 text-primary">
+                                    <span class="font-medium">D Pattern</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Time Period -->
+                        <div>
+                            <label class="block text-gray-700 mb-3 font-medium">
+                                <i class="fas fa-clock mr-2"></i>Time Period
+                            </label>
+                            <select id="timePeriod" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-primary focus:border-transparent">
+                                <option value="5d">Last 5 Days</option>
+                                <option value="1mo" selected>Last 1 Month</option>
+                                <option value="3mo">Last 3 Months</option>
+                                <option value="6mo">Last 6 Months</option>
+                            </select>
+                        </div>
                     </div>
                     
-                    <div>
-                        <label class="block text-gray-700 mb-2">Pattern Types</label>
-                        <div class="flex space-x-4">
-                            <label class="flex items-center">
-                                <input type="checkbox" checked class="mr-2"> V Pattern
-                            </label>
-                            <label class="flex items-center">
-                                <input type="checkbox" checked class="mr-2"> U Pattern
-                            </label>
+                    <!-- Progress Section -->
+                    <div id="progressSection" class="hidden mb-8 p-4 border-2 border-dashed border-gray-200 rounded-lg bg-gray-50">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <h3 class="font-bold text-gray-800">
+                                    <i class="fas fa-sync-alt mr-2 text-primary"></i>
+                                    <span id="statusText">Initializing Scanner...</span>
+                                </h3>
+                                <p id="scanningStock" class="text-sm text-gray-600 mt-1"></p>
+                            </div>
+                            <div class="text-right">
+                                <span id="progressPercent" class="text-2xl font-bold text-primary">0%</span>
+                                <p class="text-sm text-gray-600">Complete</p>
+                            </div>
+                        </div>
+                        
+                        <div class="w-full bg-gray-200 rounded-full h-3 mb-2">
+                            <div id="progressBar" class="bg-gradient-to-r from-primary to-blue-500 h-3 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        
+                        <div class="flex justify-between text-xs text-gray-600">
+                            <span>Started</span>
+                            <span id="elapsedTime">0s</span>
+                            <span>Estimated: <span id="etaTime">30s</span></span>
                         </div>
                     </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="startVolumeScan()" id="startBtn" class="bg-primary text-white px-8 py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors shadow-md">
+                            <i class="fas fa-play mr-2"></i>Start Live Scan
+                        </button>
+                        
+                        <button onclick="stopScan()" id="stopBtn" class="hidden bg-white border-2 border-danger text-danger px-8 py-3 rounded-lg font-bold hover:bg-red-50 transition-colors">
+                            <i class="fas fa-stop mr-2"></i>Stop Scan
+                        </button>
+                        
+                        <button onclick="exportResults()" id="exportBtn" class="hidden bg-success text-white px-8 py-3 rounded-lg font-bold hover:bg-green-600 transition-colors">
+                            <i class="fas fa-file-export mr-2"></i>Export Results
+                        </button>
+                        
+                        <button onclick="clearResults()" id="clearBtn" class="hidden bg-gray-200 text-gray-800 px-8 py-3 rounded-lg font-bold hover:bg-gray-300 transition-colors">
+                            <i class="fas fa-trash-alt mr-2"></i>Clear Results
+                        </button>
+                        
+                        <button onclick="showSampleData()" class="bg-gray-100 text-gray-700 px-6 py-3 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+                            <i class="fas fa-eye mr-2"></i>View Sample
+                        </button>
+                    </div>
                 </div>
-                
-                <!-- Action Buttons -->
-                <div class="flex flex-wrap gap-4 mb-8">
-                    <button onclick="startLiveScan()" class="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700">
-                        <i class="fas fa-play mr-2"></i>Start Live Scan
-                    </button>
-                    <button onclick="demoScan()" class="border border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-medium hover:bg-blue-50">
-                        <i class="fas fa-eye mr-2"></i>Show Demo Results
-                    </button>
-                    <a href="trial.html" class="border border-green-600 text-green-600 px-6 py-3 rounded-lg font-medium hover:bg-green-50">
-                        <i class="fas fa-unlock mr-2"></i>Unlock Full Features
-                    </a>
-                </div>
-                
-                <!-- Results -->
-                <div id="results" class="hidden">
-                    <h3 class="text-xl font-bold mb-4">Scan Results</h3>
+            </div>
+            
+            <!-- Results Section -->
+            <div id="resultsSection" class="hidden">
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+                    <!-- Results Header -->
+                    <div class="bg-gray-50 border-b p-6">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-xl font-bold text-gray-900">
+                                <i class="fas fa-chart-bar mr-2 text-primary"></i>
+                                Scan Results
+                                <span id="resultCount" class="text-primary ml-2">(0)</span>
+                            </h3>
+                            <div class="text-sm text-gray-600">
+                                Last updated: <span id="lastUpdated">--:--</span>
+                            </div>
+                        </div>
+                        <p class="text-gray-600 mt-2" id="resultsSummary">No scan results yet. Start a scan to see volume patterns.</p>
+                    </div>
+                    
+                    <!-- Results Table -->
                     <div class="overflow-x-auto">
-                        <table class="min-w-full bg-white border">
-                            <thead>
-                                <tr class="bg-gray-100">
-                                    <th class="py-2 px-4 border">Stock</th>
-                                    <th class="py-2 px-4 border">Pattern</th>
-                                    <th class="py-2 px-4 border">Price</th>
-                                    <th class="py-2 px-4 border">Change</th>
-                                    <th class="py-2 px-4 border">Action</th>
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Stock</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Patterns</th>
+                                    <th class="px-6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Current Price</th>
+                                    <th class="px6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Change</th>
+                                    <th class="px6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Volume</th>
+                                    <th class="px6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Signal</th>
+                                    <th class="px6 py-4 text-left text-xs font-bold text-gray-700 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="resultsTable">
-                                <!-- Results will appear here -->
+                            <tbody id="resultsTable" class="bg-white divide-y divide-gray-200">
+                                <!-- Results will be inserted here -->
                             </tbody>
                         </table>
                     </div>
+                    
+                    <!-- No Results Message -->
+                    <div id="noResults" class="hidden text-center py-12">
+                        <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gray-100 mb-4">
+                            <i class="fas fa-chart-bar text-gray-400 text-3xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-600 mb-2">No Volume Patterns Found</h4>
+                        <p class="text-gray-500 mb-6">Try scanning different stocks or adjusting pattern settings</p>
+                        <button onclick="startVolumeScan()" class="bg-primary text-white px-6 py-2 rounded-lg font-medium">
+                            <i class="fas fa-redo mr-2"></i>Scan Again
+                        </button>
+                    </div>
+                    
+                    <!-- Results Footer -->
+                    <div class="bg-gray-50 border-t p-4">
+                        <div class="flex justify-between items-center text-sm text-gray-600">
+                            <div>
+                                <i class="fas fa-info-circle mr-2"></i>
+                                <span id="scanStats">Ready to scan</span>
+                            </div>
+                            <div class="space-x-4">
+                                <button onclick="refreshResults()" class="text-primary hover:text-blue-700">
+                                    <i class="fas fa-sync-alt mr-1"></i>Refresh
+                                </button>
+                                <button onclick="sortResults('profit')" class="text-gray-600 hover:text-gray-800">
+                                    <i class="fas fa-sort-amount-down mr-1"></i>Sort by Profit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pattern Explanation -->
+            <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-xl shadow border border-green-100">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-arrow-down text-green-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900">V Pattern</h4>
+                    </div>
+                    <p class="text-gray-600 mb-3">Sharp volume decline followed by recovery. Indicates potential reversal.</p>
+                    <div class="text-xs text-green-600 font-medium">
+                        <i class="fas fa-bullseye mr-1"></i>Bullish Signal
+                    </div>
                 </div>
                 
-                <!-- How to Add Your Scanner -->
-                <div class="mt-12 p-6 bg-blue-50 rounded-lg">
-                    <h3 class="text-lg font-bold mb-3 text-blue-800">
-                        <i class="fas fa-code mr-2"></i>How to Add Your Scanner Code
-                    </h3>
-                    <p class="text-blue-700 mb-3">Replace the demo functions below with your actual Python scanner logic:</p>
-                    <div class="bg-gray-800 text-green-400 p-4 rounded-lg font-mono text-sm">
-                        <p>// 1. Add your Python scanner logic to js/main.js</p>
-                        <p>// 2. Replace demoScan() with your real scanning function</p>
-                        <p>// 3. Connect to your data source (API/database)</p>
-                        <p>// 4. Format results in the table above</p>
+                <div class="bg-white p-6 rounded-xl shadow border border-blue-100">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-archway text-blue-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900">U Pattern</h4>
+                    </div>
+                    <p class="text-gray-600 mb-3">Gradual volume decline and recovery. Shows accumulation phase.</p>
+                    <div class="text-xs text-blue-600 font-medium">
+                        <i class="fas fa-chart-line mr-1"></i>Consolidation Signal
+                    </div>
+                </div>
+                
+                <div class="bg-white p-6 rounded-xl shadow border border-red-100">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center mr-3">
+                            <i class="fas fa-arrow-up text-red-600"></i>
+                        </div>
+                        <h4 class="font-bold text-gray-900">D Pattern</h4>
+                    </div>
+                    <p class="text-gray-600 mb-3">Volume spike followed by decline. Often indicates distribution.</p>
+                    <div class="text-xs text-red-600 font-medium">
+                        <i class="fas fa-exclamation-triangle mr-1"></i>Bearish Signal
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Scanner 2-10 Preview -->
-    <section class="py-12">
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-8 mt-12">
         <div class="container mx-auto px-4">
-            <h2 class="text-2xl font-bold mb-6">Our Other Scanners</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <a href="scanner-2.html" class="bg-white p-4 rounded-lg border hover:shadow-md">
-                    <h4 class="font-bold">Scanner 2: Trend Reversal</h4>
-                    <p class="text-sm text-gray-600">Detect trend changes</p>
-                </a>
-                <a href="scanner-3.html" class="bg-white p-4 rounded-lg border hover:shadow-md">
-                    <h4 class="font-bold">Scanner 3: Breakout</h4>
-                    <p class="text-sm text-gray-600">Find breakout patterns</p>
-                </a>
-                <!-- Add more scanner previews -->
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                            <i class="fas fa-chart-line text-white text-xl"></i>
+                        </div>
+                        <span class="text-2xl font-bold">IncomePlus</span>
+                    </div>
+                    <p class="text-gray-400">Smart trading tools for Indian markets</p>
+                </div>
+                
+                <div class="text-center md:text-right">
+                    <p class="text-gray-400 mb-2">© 2024 IncomePlus. All rights reserved.</p>
+                    <p class="text-gray-500 text-sm">For educational purposes only. Not financial advice.</p>
+                </div>
             </div>
         </div>
-    </section>
+    </footer>
 
-    <!-- JavaScript -->
+    <!-- Load JavaScript Files -->
+    <script src="js/scanner-1.js"></script>
     <script>
-        // Mobile Menu Fix
-        function toggleMobileMenu() {
-            const menu = document.getElementById('mobileMenu');
-            const buttons = document.querySelectorAll('[onclick="toggleMobileMenu()"]');
-            const button = buttons[0];
-            
-            if (menu.classList.contains('hidden')) {
-                menu.classList.remove('hidden');
-                const icon = button.querySelector('i');
-                if (icon) icon.className = 'fas fa-times text-2xl';
-            } else {
-                menu.classList.add('hidden');
-                const icon = button.querySelector('i');
-                if (icon) icon.className = 'fas fa-bars text-2xl';
-            }
-        }
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            updateLastUpdated();
+            loadSampleData();
+        });
         
-        // Demo Scan Function (REPLACE WITH YOUR SCANNER LOGIC)
-        function startLiveScan() {
-            alert("Connect your Python scanner here!\n\n1. Add your scanner code to js/main.js\n2. Call it from this function\n3. Display results in the table");
-            
-            // Show loading
-            document.getElementById('results').classList.remove('hidden');
-            document.getElementById('resultsTable').innerHTML = `
-                <tr>
-                    <td colspan="5" class="py-8 text-center text-gray-500">
-                        <i class="fas fa-sync-alt fa-spin text-blue-600 text-2xl mb-2 block"></i>
-                        Connect your scanner code to see live results
-                    </td>
-                </tr>
-            `;
-        }
-        
-        function demoScan() {
-            // Demo data - REPLACE WITH YOUR ACTUAL SCANNER RESULTS
-            const demoData = [
-                {stock: "RELIANCE", pattern: "V", price: "₹2,450", change: "+1.5%"},
-                {stock: "TCS", pattern: "U", price: "₹3,850", change: "+0.8%"},
-                {stock: "HDFCBANK", pattern: "V", price: "₹1,650", change: "+2.1%"}
-            ];
-            
-            document.getElementById('results').classList.remove('hidden');
-            let html = '';
-            
-            demoData.forEach(item => {
-                html += `
-                    <tr class="hover:bg-gray-50">
-                        <td class="py-3 px-4 border">${item.stock}</td>
-                        <td class="py-3 px-4 border">
-                            <span class="px-2 py-1 rounded text-xs ${item.pattern === 'V' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}">
-                                ${item.pattern} Pattern
-                            </span>
-                        </td>
-                        <td class="py-3 px-4 border font-medium">${item.price}</td>
-                        <td class="py-3 px-4 border ${item.change.startsWith('+') ? 'text-green-600' : 'text-red-600'}">
-                            ${item.change}
-                        </td>
-                        <td class="py-3 px-4 border">
-                            <button class="text-blue-600 hover:text-blue-800 text-sm">
-                                <i class="fas fa-chart-line mr-1"></i>View
-                            </button>
-                        </td>
-                    </tr>
-                `;
+        function updateLastUpdated() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('en-IN', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
             });
-            
-            document.getElementById('resultsTable').innerHTML = html;
+            document.getElementById('lastUpdated').textContent = timeString;
+        }
+        
+        function loadSampleData() {
+            // This will be populated by scanner-1.js
         }
     </script>
 </body>
