@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Start Free Trial | IncomePlus | 10 Stock Scanners</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50">
+    <nav class="bg-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <i class="fas fa-chart-line text-white text-xl"></i>
+                    </div>
+                    <span class="text-2xl font-bold text-gray-900">IncomePlus</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="py-16">
+        <div class="container mx-auto px-4 max-w-4xl">
+            <div class="bg-white rounded-2xl shadow-xl p-8">
+                <h1 class="text-3xl font-bold mb-2">Start Your 7-Day Free Trial</h1>
+                <p class="text-gray-600 mb-8">Get full access to all 10 stock scanners</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                    <!-- Trial Benefits -->
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">What You Get</h3>
+                        <ul class="space-y-3">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-3"></i>
+                                All 10 stock scanners
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-3"></i>
+                                Live market data
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-3"></i>
+                                Export results
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-3"></i>
+                                Mobile access
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-green-500 mr-3"></i>
+                                No credit card required
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Trial Form -->
+                    <div>
+                        <form id="trialForm" onsubmit="startTrial(event)">
+                            <div class="mb-4">
+                                <label class="block text-gray-700 mb-2">Your Email</label>
+                                <input type="email" required 
+                                       class="w-full border rounded-lg p-3"
+                                       placeholder="you@example.com">
+                            </div>
+                            
+                            <div class="mb-6">
+                                <label class="block text-gray-700 mb-2">Password</label>
+                                <input type="password" required 
+                                       class="w-full border rounded-lg p-3"
+                                       placeholder="Create a password">
+                            </div>
+                            
+                            <button type="submit" 
+                                    class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700">
+                                <i class="fas fa-rocket mr-2"></i>Start Free Trial
+                            </button>
+                            
+                            <p class="mt-4 text-sm text-gray-600 text-center">
+                                After 7 days: ₹999/month • Cancel anytime
+                            </p>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Pricing -->
+                <div class="border-t pt-8">
+                    <h3 class="text-xl font-bold mb-4">Simple Pricing</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="border rounded-lg p-4 text-center">
+                            <h4 class="font-bold">Free Trial</h4>
+                            <p class="text-2xl font-bold my-2">₹0</p>
+                            <p class="text-sm text-gray-600">7 days full access</p>
+                        </div>
+                        <div class="border-2 border-blue-500 rounded-lg p-4 text-center bg-blue-50">
+                            <h4 class="font-bold">Monthly</h4>
+                            <p class="text-2xl font-bold my-2">₹999<span class="text-sm">/month</span></p>
+                            <p class="text-sm text-gray-600">All features included</p>
+                        </div>
+                        <div class="border rounded-lg p-4 text-center">
+                            <h4 class="font-bold">Yearly</h4>
+                            <p class="text-2xl font-bold my-2">₹9,999<span class="text-sm">/year</span></p>
+                            <p class="text-sm text-gray-600">Save ₹2,000 annually</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function startTrial(e) {
+            e.preventDefault();
+            alert("Trial started! (In production: Save to database, send welcome email)\n\nRedirect to scanner dashboard...");
+            window.location.href = "scanner-1.html";
+        }
+    </script>
+</body>
+</html>
