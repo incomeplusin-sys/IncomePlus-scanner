@@ -1,8 +1,11 @@
+
+console.log("Scanner-1.js file is LOADED successfully!");
 /**
  * IncomePlus Volume Pattern Scanner
  * JavaScript implementation of Python volume pattern detection
  * Works with Yahoo Finance API for real-time data
  */
+
 
 class VolumePatternScanner {
     constructor() {
