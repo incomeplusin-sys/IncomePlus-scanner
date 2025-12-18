@@ -1,194 +1,114 @@
-// IncomePlus Main JavaScript - Updated with Stock Scanner
+// IncomePlus - Fixed Mobile Menu & Scanner Functions
 
-// Mobile menu toggle
-const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-const mobileMenu = document.getElementById('mobileMenu');
-
-if (mobileMenuBtn && mobileMenu) {
-    mobileMenuBtn.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-        const icon = mobileMenuBtn.querySelector('i');
-        if (mobileMenu.classList.contains('hidden')) {
-            icon.className = 'fas fa-bars text-2xl';
-        } else {
-            icon.className = 'fas fa-times text-2xl';
+// 1. FIXED MOBILE MENU (Works on all pages)
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    if (!menu) return;
+    
+    // Find the menu button
+    const buttons = document.querySelectorAll('[onclick*="toggleMobileMenu"]');
+    const button = buttons[0];
+    
+    if (menu.classList.contains('hidden')) {
+        // Show menu
+        menu.classList.remove('hidden');
+        // Change icon to X
+        if (button) {
+            const icon = button.querySelector('i');
+            if (icon) icon.className = 'fas fa-times text-2xl';
         }
-    });
+    } else {
+        // Hide menu
+        menu.classList.add('hidden');
+        // Change icon back to bars
+        if (button) {
+            const icon = button.querySelector('i');
+            if (icon) icon.className = 'fas fa-bars text-2xl';
+        }
+    }
 }
 
-// Close mobile menu when clicking outside
-document.addEventListener('click', (e) => {
-    if (mobileMenu && mobileMenuBtn && !mobileMenu.classList.contains('hidden') && 
-        !mobileMenu.contains(e.target) && 
-        !mobileMenuBtn.contains(e.target)) {
-        mobileMenu.classList.add('hidden');
-        const icon = mobileMenuBtn.querySelector('i');
-        icon.className = 'fas fa-bars text-2xl';
+// Close menu when clicking outside
+document.addEventListener('click', function(e) {
+    const menu = document.getElementById('mobileMenu');
+    if (!menu || menu.classList.contains('hidden')) return;
+    
+    // Find all menu buttons
+    const buttons = document.querySelectorAll('[onclick*="toggleMobileMenu"]');
+    let isMenuButton = false;
+    
+    buttons.forEach(button => {
+        if (button.contains(e.target)) isMenuButton = true;
+    });
+    
+    // If click is outside menu and not on menu button
+    if (!menu.contains(e.target) && !isMenuButton) {
+        menu.classList.add('hidden');
+        // Reset all menu button icons
+        buttons.forEach(button => {
+            const icon = button.querySelector('i');
+            if (icon) icon.className = 'fas fa-bars text-2xl';
+        });
     }
 });
 
-// Pricing page toggle
-if (window.location.pathname.includes('pricing.html')) {
-    document.addEventListener('DOMContentLoaded', function() {
-        const monthlyBtn = document.getElementById('monthlyBtn');
-        const yearlyBtn = document.getElementById('yearlyBtn');
-        const monthlyPrices = document.querySelectorAll('.monthly-price');
-        const yearlyPrices = document.querySelectorAll('.yearly-price');
-        
-        if (monthlyBtn && yearlyBtn) {
-            monthlyBtn.addEventListener('click', () => {
-                monthlyBtn.classList.add('bg-white', 'text-blue-600');
-                monthlyBtn.classList.remove('text-white');
-                yearlyBtn.classList.remove('bg-white', 'text-blue-600');
-                yearlyBtn.classList.add('text-white');
-                
-                monthlyPrices.forEach(p => p.classList.remove('hidden'));
-                yearlyPrices.forEach(p => p.classList.add('hidden'));
-            });
-            
-            yearlyBtn.addEventListener('click', () => {
-                yearlyBtn.classList.add('bg-white', 'text-blue-600');
-                yearlyBtn.classList.remove('text-white');
-                monthlyBtn.classList.remove('bg-white', 'text-blue-600');
-                monthlyBtn.classList.add('text-white');
-                
-                yearlyPrices.forEach(p => p.classList.remove('hidden'));
-                monthlyPrices.forEach(p => p.classList.add('hidden'));
-            });
-        }
-    });
-}
-
-// Add notification system
-window.showNotification = function(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg ${
-        type === 'success' ? 'bg-green-500' : 
-        type === 'error' ? 'bg-red-500' : 
-        'bg-blue-500'
-    } text-white notification`;
-    notification.textContent = message;
+// 2. SCANNER FUNCTIONS (Add your Python scanner here)
+window.startLiveScan = function() {
+    // Replace this with your Python scanner integration
+    console.log("Connect your Python scanner here");
     
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.classList.add('hiding');
-        setTimeout(() => {
-            if (notification.parentNode) {
-                document.body.removeChild(notification);
-            }
-        }, 300);
-    }, 3000);
+    // Show loading state
+    const resultsDiv = document.getElementById('results');
+    if (resultsDiv) {
+        resultsDiv.classList.remove('hidden');
+        resultsDiv.innerHTML = `
+            <div class="text-center py-8">
+                <i class="fas fa-sync-alt fa-spin text-blue-600 text-3xl mb-4"></i>
+                <h4 class="font-bold mb-2">Connecting to your scanner...</h4>
+                <p class="text-gray-600">Add your Python scanner code to this function</p>
+            </div>
+        `;
+    }
 };
 
-// Initialize tooltips
+// 3. TRIAL MANAGEMENT
+window.startTrial = function(email) {
+    // Save trial info (in production: send to backend)
+    localStorage.setItem('incomeplus_trial', JSON.stringify({
+        email: email,
+        startDate: new Date().toISOString(),
+        endDate: new Date(Date.now() + 7*24*60*60*1000).toISOString(),
+        active: true
+    }));
+    
+    alert("Free trial started! You have 7 days of full access.");
+    window.location.href = "/";
+};
+
+// 4. CHECK TRIAL STATUS ON PAGE LOAD
 document.addEventListener('DOMContentLoaded', function() {
-    // Add tooltip functionality
-    const tooltips = document.querySelectorAll('[data-tooltip]');
-    tooltips.forEach(element => {
-        element.addEventListener('mouseenter', function() {
-            const tooltip = document.createElement('div');
-            tooltip.className = 'absolute z-50 px-2 py-1 text-sm text-white bg-gray-900 rounded shadow-lg';
-            tooltip.textContent = this.dataset.tooltip;
-            tooltip.style.top = (this.offsetTop - 30) + 'px';
-            tooltip.style.left = (this.offsetLeft + this.offsetWidth/2) + 'px';
-            tooltip.style.transform = 'translateX(-50%)';
-            tooltip.id = 'tooltip-' + Date.now();
-            
-            this.appendChild(tooltip);
-        });
+    // Check if user is on trial
+    const trialData = localStorage.getItem('incomeplus_trial');
+    if (trialData) {
+        const trial = JSON.parse(trialData);
+        const endDate = new Date(trial.endDate);
+        const today = new Date();
         
-        element.addEventListener('mouseleave', function() {
-            const tooltip = this.querySelector('[class*="absolute"]');
-            if (tooltip) {
-                tooltip.remove();
-            }
+        if (endDate > today) {
+            // Trial is active
+            const daysLeft = Math.ceil((endDate - today) / (1000 * 60 * 60 * 24));
+            console.log(`Trial active: ${daysLeft} days remaining`);
+        } else {
+            // Trial expired
+            console.log("Trial expired");
+        }
+    }
+    
+    // Initialize tooltips
+    const tooltips = document.querySelectorAll('[title]');
+    tooltips.forEach(el => {
+        el.addEventListener('mouseenter', function() {
+            // Add tooltip logic if needed
         });
     });
-    
-    // Add current year to footer
-    const yearSpans = document.querySelectorAll('.current-year');
-    if (yearSpans.length > 0) {
-        const currentYear = new Date().getFullYear();
-        yearSpans.forEach(span => {
-            span.textContent = currentYear;
-        });
-    }
 });
-
-// Export functionality for scanner pages
-window.exportToCSV = function(data, filename) {
-    if (!data || data.length === 0) {
-        showNotification('No data to export', 'error');
-        return;
-    }
-    
-    let csv = '';
-    const headers = Object.keys(data[0]);
-    csv += headers.join(',') + '\n';
-    
-    data.forEach(row => {
-        const values = headers.map(header => {
-            const value = row[header];
-            return typeof value === 'string' && value.includes(',') ? `"${value}"` : value;
-        });
-        csv += values.join(',') + '\n';
-    });
-    
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename || `incomeplus_export_${new Date().toISOString().split('T')[0]}.csv`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-    
-    showNotification('Export completed successfully', 'success');
-};
-
-// Print functionality
-window.printPage = function(elementId) {
-    const element = document.getElementById(elementId);
-    if (!element) {
-        window.print();
-        return;
-    }
-    
-    const originalContent = document.body.innerHTML;
-    const printContent = element.innerHTML;
-    
-    document.body.innerHTML = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>IncomePlus Report</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 20px; }
-                h1, h2, h3 { color: #333; }
-                table { border-collapse: collapse; width: 100%; margin: 20px 0; }
-                th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-                th { background-color: #f2f2f2; }
-                .print-header { text-align: center; margin-bottom: 30px; }
-                .print-footer { margin-top: 50px; text-align: center; font-size: 12px; color: #666; }
-            </style>
-        </head>
-        <body>
-            <div class="print-header">
-                <h1>IncomePlus Report</h1>
-                <p>Generated on: ${new Date().toLocaleString()}</p>
-            </div>
-            ${printContent}
-            <div class="print-footer">
-                <p>&copy; ${new Date().getFullYear()} IncomePlus. All rights reserved.</p>
-                <p>For educational purposes only. Not financial advice.</p>
-            </div>
-        </body>
-        </html>
-    `;
-    
-    window.print();
-    document.body.innerHTML = originalContent;
-    window.location.reload();
-};
