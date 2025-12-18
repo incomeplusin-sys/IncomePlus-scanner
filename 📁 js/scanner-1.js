@@ -96,18 +96,37 @@ class VolumePatternScanner {
     }
     
     /**
-     * Fetch stock data from Yahoo Finance
+     * Fetch stock data from Yahoo Finance using CORS proxy
      */
     async fetchStockData(symbol) {
         try {
             const timePeriod = document.getElementById('timePeriod')?.value || '1mo';
-            const url = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=${timePeriod}&interval=1d`;
             
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            // Use a CORS proxy to avoid CORS errors
+            // Option 1: AllOrigins (free, reliable)
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            const yahooUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${symbol}?range=${timePeriod}&interval=1d`;
+            const url = proxyUrl + encodeURIComponent(yahooUrl);
+            
+            console.log(`Fetching ${symbol} via CORS proxy...`);
+            
+            const response = await fetch(url, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                }
+            });
+            
+            if (!response.ok) {
+                console.warn(`HTTP ${response.status} for ${symbol}`);
+                return null;
+            }
             
             const data = await response.json();
-            if (!data.chart.result?.[0]) return null;
+            
+            if (!data.chart.result?.[0]) {
+                console.warn(`No data for ${symbol}`);
+                return null;
+            }
             
             const result = data.chart.result[0];
             const quote = result.indicators.quote[0];
@@ -115,13 +134,16 @@ class VolumePatternScanner {
             const volumes = quote.volume || [];
             const closes = quote.close || [];
             
-            if (volumes.length < 10) return null;
+            if (volumes.length < 10) {
+                console.warn(`Insufficient data for ${symbol}`);
+                return null;
+            }
             
             const currentPrice = closes[closes.length - 1] || 0;
             const previousPrice = closes[closes.length - 2] || currentPrice;
             const priceChange = ((currentPrice - previousPrice) / previousPrice) * 100;
-            const avgVolume = volumes.reduce((a, b) => a + b, 0) / volumes.length;
-            const volumeRatio = volumes[volumes.length - 1] / avgVolume;
+            const avgVolume = volumes.length > 0 ? volumes.reduce((a, b) => a + b, 0) / volumes.length : 0;
+            const volumeRatio = avgVolume > 0 ? (volumes[volumes.length - 1] / avgVolume) : 0;
             
             return {
                 symbol: symbol,
@@ -215,7 +237,7 @@ class VolumePatternScanner {
             }
             
             document.getElementById('stocksScanned').textContent = i + 1;
-            await this.delay(300); // Shorter delay for testing
+            await this.delay(1000); // 1 second delay for CORS proxy
         }
         
         this.completeScan();
@@ -332,7 +354,12 @@ class VolumePatternScanner {
         if (stopBtn) stopBtn.classList.add('hidden');
         
         console.log('Scan completed. Found', this.scanResults.length, 'patterns');
-        alert(`Scan complete! Found ${this.scanResults.length} volume patterns.`);
+        
+        if (this.scanResults.length > 0) {
+            alert(`Scan complete! Found ${this.scanResults.length} volume patterns.`);
+        } else {
+            alert('Scan complete! No volume patterns detected in the selected stocks.');
+        }
     }
     
     /**
@@ -434,6 +461,15 @@ class VolumePatternScanner {
                 volume: 3123456,
                 volumeRatio: 1.12,
                 timestamp: new Date().toISOString()
+            },
+            {
+                symbol: 'HDFCBANK',
+                patterns: ['D'],
+                price: 1654.30,
+                change: -0.75,
+                volume: 7123456,
+                volumeRatio: 1.10,
+                timestamp: new Date().toISOString()
             }
         ];
         
@@ -441,7 +477,7 @@ class VolumePatternScanner {
         const resultsSection = document.getElementById('resultsSection');
         if (resultsSection) resultsSection.classList.remove('hidden');
         
-        alert('Sample data loaded!');
+        alert('Sample data loaded! Check the results table.');
     }
     
     /**
@@ -535,7 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Scanner setup complete');
     console.log('✅ startVolumeScan is a function:', typeof startVolumeScan === 'function');
     
-    // Test: Add click handler directly
+    // Test: Add click handler directly as backup
     const startBtn = document.getElementById('startBtn');
     if (startBtn) {
         startBtn.addEventListener('click', function(e) {
@@ -543,7 +579,14 @@ document.addEventListener('DOMContentLoaded', function() {
             console.log('Start button clicked directly');
             if (window.scanner) {
                 window.scanner.startVolumeScan();
+            } else {
+                alert('Scanner not loaded yet. Please wait...');
             }
         });
     }
+    
+    // Auto-test the scanner
+    console.log('Testing scanner instance...');
+    console.log('Scanner exists:', typeof window.scanner !== 'undefined');
+    console.log('Scanner methods:', window.scanner ? Object.keys(window.scanner) : 'No scanner');
 });
